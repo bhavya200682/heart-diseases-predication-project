@@ -16,15 +16,15 @@
     --popover: 0 0% 100%;
     --popover-foreground: 215 25% 15%;
     
-    /* Medical Blue Primary */
-    --primary: 210 90% 48%;
+    /* Medical Teal Primary */
+    --primary: 180 85% 45%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 210 90% 65%;
+    --primary-glow: 180 85% 65%;
     
-    /* Healthcare Green Secondary */
-    --secondary: 150 60% 50%;
+    /* Healthcare Cyan Secondary */
+    --secondary: 195 90% 50%;
     --secondary-foreground: 0 0% 100%;
-    --secondary-glow: 150 60% 70%;
+    --secondary-glow: 195 90% 70%;
     
     /* Soft Medical Grays */
     --muted: 210 20% 96%;
@@ -43,14 +43,14 @@
     
     --border: 215 20% 90%;
     --input: 215 20% 95%;
-    --ring: 210 90% 48%;
+    --ring: 180 85% 45%;
     
     --radius: 0.75rem;
     
     /* Medical Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
     --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary-glow)));
-    --gradient-hero: linear-gradient(135deg, hsl(210 90% 48%), hsl(195 85% 55%), hsl(150 70% 60%));
+    --gradient-hero: linear-gradient(135deg, hsl(180 85% 45%), hsl(195 90% 50%), hsl(185 80% 55%));
     --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(210 20% 98%));
     
     /* Medical Shadows */
