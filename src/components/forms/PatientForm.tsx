@@ -13,39 +13,42 @@ import {
 } from "lucide-react";
 
 interface FormData {
-  // Personal Information
+  // Exact dataset fields
   age: string;
-  gender: string;
-  // Medical Parameters
-  chestPainType: string;
-  restingBP: string;
-  cholesterol: string;
-  fastingBS: string;
-  restingECG: string;
-  maxHR: string;
-  exerciseAngina: string;
-  oldpeak: string;
-  stSlope: string;
+  sex: string;           // 0=female, 1=male
+  cp: string;            // chest pain type (0,1,2,3)
+  trestbps: string;      // resting blood pressure
+  chol: string;          // serum cholestoral in mg/dl
+  fbs: string;           // fasting blood sugar > 120 mg/dl (1=true, 0=false)
+  restecg: string;       // resting electrocardiographic results (0,1,2)
+  thalach: string;       // maximum heart rate achieved
+  exang: string;         // exercise induced angina (1=yes, 0=no)
+  oldpeak: string;       // ST depression induced by exercise
+  slope: string;         // slope of the peak exercise ST segment (0,1,2)
+  ca: string;            // number of major vessels (0-3) colored by flourosopy
+  thal: string;          // thalassemia (0,1,2,3)
 }
 
 const initialFormData: FormData = {
   age: "",
-  gender: "",
-  chestPainType: "",
-  restingBP: "",
-  cholesterol: "",
-  fastingBS: "",
-  restingECG: "",
-  maxHR: "",
-  exerciseAngina: "",
+  sex: "",
+  cp: "",
+  trestbps: "",
+  chol: "",
+  fbs: "",
+  restecg: "",
+  thalach: "",
+  exang: "",
   oldpeak: "",
-  stSlope: ""
+  slope: "",
+  ca: "",
+  thal: ""
 };
 
 const PatientForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const totalSteps = 4;
+  const totalSteps = 5;
   const progress = (currentStep / totalSteps) * 100;
 
   const handleInputChange = (field: keyof FormData, value: string) => {
@@ -72,7 +75,7 @@ const PatientForm = () => {
             <div className="text-center mb-8">
               <User className="h-16 w-16 mx-auto text-primary mb-4" />
               <h3 className="text-2xl font-bold">Personal Information</h3>
-              <p className="text-muted-foreground">Let's start with basic demographics</p>
+              <p className="text-muted-foreground">Basic demographics</p>
             </div>
             
             <div className="grid md:grid-cols-2 gap-6">
@@ -83,22 +86,22 @@ const PatientForm = () => {
                   value={formData.age}
                   onChange={(e) => handleInputChange("age", e.target.value)}
                   className="input-medical"
-                  placeholder="Enter your age"
-                  min="18"
+                  placeholder="Enter age"
+                  min="1"
                   max="100"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-2">Gender</label>
+                <label className="block text-sm font-medium mb-2">Sex</label>
                 <select
-                  value={formData.gender}
-                  onChange={(e) => handleInputChange("gender", e.target.value)}
+                  value={formData.sex}
+                  onChange={(e) => handleInputChange("sex", e.target.value)}
                   className="input-medical"
                 >
-                  <option value="">Select gender</option>
-                  <option value="M">Male</option>
-                  <option value="F">Female</option>
+                  <option value="">Select sex</option>
+                  <option value="1">Male</option>
+                  <option value="0">Female</option>
                 </select>
               </div>
             </div>
@@ -110,36 +113,36 @@ const PatientForm = () => {
           <div className="space-y-6 animate-fade-in">
             <div className="text-center mb-8">
               <Heart className="h-16 w-16 mx-auto text-primary mb-4 animate-heartbeat" />
-              <h3 className="text-2xl font-bold">Cardiac Symptoms</h3>
-              <p className="text-muted-foreground">Information about chest pain and symptoms</p>
+              <h3 className="text-2xl font-bold">Chest Pain & Exercise</h3>
+              <p className="text-muted-foreground">Chest pain type and exercise-induced symptoms</p>
             </div>
             
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium mb-2">Chest Pain Type</label>
+                <label className="block text-sm font-medium mb-2">Chest Pain Type (cp)</label>
                 <select
-                  value={formData.chestPainType}
-                  onChange={(e) => handleInputChange("chestPainType", e.target.value)}
+                  value={formData.cp}
+                  onChange={(e) => handleInputChange("cp", e.target.value)}
                   className="input-medical"
                 >
                   <option value="">Select chest pain type</option>
-                  <option value="TA">Typical Angina</option>
-                  <option value="ATA">Atypical Angina</option>
-                  <option value="NAP">Non-Anginal Pain</option>
-                  <option value="ASY">Asymptomatic</option>
+                  <option value="0">Type 0</option>
+                  <option value="1">Type 1</option>
+                  <option value="2">Type 2</option>
+                  <option value="3">Type 3</option>
                 </select>
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-2">Exercise Induced Angina</label>
+                <label className="block text-sm font-medium mb-2">Exercise Induced Angina (exang)</label>
                 <select
-                  value={formData.exerciseAngina}
-                  onChange={(e) => handleInputChange("exerciseAngina", e.target.value)}
+                  value={formData.exang}
+                  onChange={(e) => handleInputChange("exang", e.target.value)}
                   className="input-medical"
                 >
                   <option value="">Select option</option>
-                  <option value="Y">Yes</option>
-                  <option value="N">No</option>
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
                 </select>
               </div>
             </div>
@@ -152,16 +155,16 @@ const PatientForm = () => {
             <div className="text-center mb-8">
               <Activity className="h-16 w-16 mx-auto text-primary mb-4" />
               <h3 className="text-2xl font-bold">Vital Signs</h3>
-              <p className="text-muted-foreground">Blood pressure, heart rate, and ECG data</p>
+              <p className="text-muted-foreground">Blood pressure and heart rate measurements</p>
             </div>
             
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium mb-2">Resting Blood Pressure (mmHg)</label>
+                <label className="block text-sm font-medium mb-2">Resting Blood Pressure (trestbps)</label>
                 <input
                   type="number"
-                  value={formData.restingBP}
-                  onChange={(e) => handleInputChange("restingBP", e.target.value)}
+                  value={formData.trestbps}
+                  onChange={(e) => handleInputChange("trestbps", e.target.value)}
                   className="input-medical"
                   placeholder="120"
                   min="80"
@@ -170,11 +173,11 @@ const PatientForm = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-2">Maximum Heart Rate</label>
+                <label className="block text-sm font-medium mb-2">Maximum Heart Rate (thalach)</label>
                 <input
                   type="number"
-                  value={formData.maxHR}
-                  onChange={(e) => handleInputChange("maxHR", e.target.value)}
+                  value={formData.thalach}
+                  onChange={(e) => handleInputChange("thalach", e.target.value)}
                   className="input-medical"
                   placeholder="150"
                   min="60"
@@ -183,30 +186,30 @@ const PatientForm = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-2">Resting ECG</label>
+                <label className="block text-sm font-medium mb-2">Resting ECG (restecg)</label>
                 <select
-                  value={formData.restingECG}
-                  onChange={(e) => handleInputChange("restingECG", e.target.value)}
+                  value={formData.restecg}
+                  onChange={(e) => handleInputChange("restecg", e.target.value)}
                   className="input-medical"
                 >
                   <option value="">Select ECG result</option>
-                  <option value="Normal">Normal</option>
-                  <option value="ST">ST-T wave abnormality</option>
-                  <option value="LVH">Left ventricular hypertrophy</option>
+                  <option value="0">Normal</option>
+                  <option value="1">ST-T wave abnormality</option>
+                  <option value="2">Left ventricular hypertrophy</option>
                 </select>
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-2">ST Slope</label>
+                <label className="block text-sm font-medium mb-2">ST Slope (slope)</label>
                 <select
-                  value={formData.stSlope}
-                  onChange={(e) => handleInputChange("stSlope", e.target.value)}
+                  value={formData.slope}
+                  onChange={(e) => handleInputChange("slope", e.target.value)}
                   className="input-medical"
                 >
                   <option value="">Select ST slope</option>
-                  <option value="Up">Upsloping</option>
-                  <option value="Flat">Flat</option>
-                  <option value="Down">Downsloping</option>
+                  <option value="0">Upsloping</option>
+                  <option value="1">Flat</option>
+                  <option value="2">Downsloping</option>
                 </select>
               </div>
             </div>
@@ -224,11 +227,11 @@ const PatientForm = () => {
             
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium mb-2">Cholesterol (mg/dl)</label>
+                <label className="block text-sm font-medium mb-2">Cholesterol (chol)</label>
                 <input
                   type="number"
-                  value={formData.cholesterol}
-                  onChange={(e) => handleInputChange("cholesterol", e.target.value)}
+                  value={formData.chol}
+                  onChange={(e) => handleInputChange("chol", e.target.value)}
                   className="input-medical"
                   placeholder="200"
                   min="100"
@@ -237,14 +240,14 @@ const PatientForm = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-2">Fasting Blood Sugar {">"} 120 mg/dl</label>
+                <label className="block text-sm font-medium mb-2">Fasting Blood Sugar {"> 120 mg/dl (fbs)"}</label>
                 <select
-                  value={formData.fastingBS}
-                  onChange={(e) => handleInputChange("fastingBS", e.target.value)}
+                  value={formData.fbs}
+                  onChange={(e) => handleInputChange("fbs", e.target.value)}
                   className="input-medical"
                 >
                   <option value="">Select option</option>
-                  <option value="1">Yes ({">"} 120 mg/dl)</option>
+                  <option value="1">Yes ({"> 120 mg/dl"})</option>
                   <option value="0">No (≤ 120 mg/dl)</option>
                 </select>
               </div>
@@ -261,6 +264,49 @@ const PatientForm = () => {
                   min="-3"
                   max="7"
                 />
+              </div>
+            </div>
+          </div>
+        );
+
+      case 5:
+        return (
+          <div className="space-y-6 animate-fade-in">
+            <div className="text-center mb-8">
+              <Activity className="h-16 w-16 mx-auto text-secondary mb-4" />
+              <h3 className="text-2xl font-bold">Advanced Tests</h3>
+              <p className="text-muted-foreground">Vessel and thalassemia data</p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium mb-2">Major Vessels (ca)</label>
+                <select
+                  value={formData.ca}
+                  onChange={(e) => handleInputChange("ca", e.target.value)}
+                  className="input-medical"
+                >
+                  <option value="">Select number of vessels</option>
+                  <option value="0">0</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2">Thalassemia (thal)</label>
+                <select
+                  value={formData.thal}
+                  onChange={(e) => handleInputChange("thal", e.target.value)}
+                  className="input-medical"
+                >
+                  <option value="">Select thalassemia type</option>
+                  <option value="0">Type 0</option>
+                  <option value="1">Type 1</option>
+                  <option value="2">Type 2</option>
+                  <option value="3">Type 3</option>
+                </select>
               </div>
             </div>
           </div>
