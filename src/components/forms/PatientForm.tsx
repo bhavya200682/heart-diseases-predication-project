@@ -1,32 +1,38 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { 
-  User, 
-  Heart, 
-  Activity, 
-  BarChart3, 
-  ArrowRight, 
+import {
+  User,
+  Heart,
+  Activity,
+  BarChart3,
+  ArrowRight,
   ArrowLeft,
-  CheckCircle 
+  CheckCircle
 } from "lucide-react";
 
 interface FormData {
-  // Exact dataset fields
-  age: string;
-  sex: string;           // 0=female, 1=male
-  cp: string;            // chest pain type (0,1,2,3)
-  trestbps: string;      // resting blood pressure
-  chol: string;          // serum cholestoral in mg/dl
-  fbs: string;           // fasting blood sugar > 120 mg/dl (1=true, 0=false)
-  restecg: string;       // resting electrocardiographic results (0,1,2)
-  thalach: string;       // maximum heart rate achieved
-  exang: string;         // exercise induced angina (1=yes, 0=no)
-  oldpeak: string;       // ST depression induced by exercise
-  slope: string;         // slope of the peak exercise ST segment (0,1,2)
-  ca: string;            // number of major vessels (0-3) colored by flourosopy
-  thal: string;          // thalassemia (0,1,2,3)
+  age: number | "";
+  sex: number | "";
+  cp: number | "";
+  trestbps: number | "";
+  chol: number | "";
+  fbs: number | "";
+  restecg: number | "";
+  thalach: number | "";
+  exang: number | "";
+  oldpeak: number | "";
+  slope: number | "";
+  ca: number | "";
+  thal: number | "";
+  target?: number | "";
 }
 
 const initialFormData: FormData = {
@@ -42,28 +48,47 @@ const initialFormData: FormData = {
   oldpeak: "",
   slope: "",
   ca: "",
-  thal: ""
+  thal: "",
+  target: ""
 };
 
 const PatientForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const totalSteps = 5;
+  const totalSteps = 6; // added Target field as separate step
   const progress = (currentStep / totalSteps) * 100;
 
   const handleInputChange = (field: keyof FormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    const numericFields: (keyof FormData)[] = [
+      "age",
+      "sex",
+      "cp",
+      "trestbps",
+      "chol",
+      "fbs",
+      "restecg",
+      "thalach",
+      "exang",
+      "oldpeak",
+      "slope",
+      "ca",
+      "thal",
+      "target"
+    ];
+    const newValue =
+      numericFields.includes(field) && value !== "" ? Number(value) : value;
+    setFormData((prev) => ({ ...prev, [field]: newValue }));
   };
 
   const nextStep = () => {
     if (currentStep < totalSteps) {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep((prev) => prev + 1);
     }
   };
 
   const prevStep = () => {
     if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep((prev) => prev - 1);
     }
   };
 
@@ -77,7 +102,7 @@ const PatientForm = () => {
               <h3 className="text-2xl font-bold">Personal Information</h3>
               <p className="text-muted-foreground">Basic demographics</p>
             </div>
-            
+
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium mb-2">Age</label>
@@ -91,7 +116,7 @@ const PatientForm = () => {
                   max="100"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium mb-2">Sex</label>
                 <select
@@ -107,19 +132,23 @@ const PatientForm = () => {
             </div>
           </div>
         );
-      
+
       case 2:
         return (
           <div className="space-y-6 animate-fade-in">
             <div className="text-center mb-8">
               <Heart className="h-16 w-16 mx-auto text-primary mb-4 animate-heartbeat" />
               <h3 className="text-2xl font-bold">Chest Pain & Exercise</h3>
-              <p className="text-muted-foreground">Chest pain type and exercise-induced symptoms</p>
+              <p className="text-muted-foreground">
+                Chest pain type and exercise-induced symptoms
+              </p>
             </div>
-            
+
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium mb-2">Chest Pain Type (cp)</label>
+                <label className="block text-sm font-medium mb-2">
+                  Chest Pain Type (cp)
+                </label>
                 <select
                   value={formData.cp}
                   onChange={(e) => handleInputChange("cp", e.target.value)}
@@ -132,9 +161,11 @@ const PatientForm = () => {
                   <option value="3">Type 3</option>
                 </select>
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium mb-2">Exercise Induced Angina (exang)</label>
+                <label className="block text-sm font-medium mb-2">
+                  Exercise Induced Angina (exang)
+                </label>
                 <select
                   value={formData.exang}
                   onChange={(e) => handleInputChange("exang", e.target.value)}
@@ -148,32 +179,40 @@ const PatientForm = () => {
             </div>
           </div>
         );
-      
+
       case 3:
         return (
           <div className="space-y-6 animate-fade-in">
             <div className="text-center mb-8">
               <Activity className="h-16 w-16 mx-auto text-primary mb-4" />
               <h3 className="text-2xl font-bold">Vital Signs</h3>
-              <p className="text-muted-foreground">Blood pressure and heart rate measurements</p>
+              <p className="text-muted-foreground">
+                Blood pressure and heart rate measurements
+              </p>
             </div>
-            
+
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium mb-2">Resting Blood Pressure (trestbps)</label>
+                <label className="block text-sm font-medium mb-2">
+                  Resting Blood Pressure (trestbps)
+                </label>
                 <input
                   type="number"
                   value={formData.trestbps}
-                  onChange={(e) => handleInputChange("trestbps", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("trestbps", e.target.value)
+                  }
                   className="input-medical"
                   placeholder="120"
                   min="80"
                   max="200"
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium mb-2">Maximum Heart Rate (thalach)</label>
+                <label className="block text-sm font-medium mb-2">
+                  Maximum Heart Rate (thalach)
+                </label>
                 <input
                   type="number"
                   value={formData.thalach}
@@ -184,9 +223,11 @@ const PatientForm = () => {
                   max="220"
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium mb-2">Resting ECG (restecg)</label>
+                <label className="block text-sm font-medium mb-2">
+                  Resting ECG (restecg)
+                </label>
                 <select
                   value={formData.restecg}
                   onChange={(e) => handleInputChange("restecg", e.target.value)}
@@ -198,9 +239,11 @@ const PatientForm = () => {
                   <option value="2">Left ventricular hypertrophy</option>
                 </select>
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium mb-2">ST Slope (slope)</label>
+                <label className="block text-sm font-medium mb-2">
+                  ST Slope (slope)
+                </label>
                 <select
                   value={formData.slope}
                   onChange={(e) => handleInputChange("slope", e.target.value)}
@@ -215,19 +258,23 @@ const PatientForm = () => {
             </div>
           </div>
         );
-      
+
       case 4:
         return (
           <div className="space-y-6 animate-fade-in">
             <div className="text-center mb-8">
               <BarChart3 className="h-16 w-16 mx-auto text-primary mb-4" />
               <h3 className="text-2xl font-bold">Laboratory Results</h3>
-              <p className="text-muted-foreground">Cholesterol and blood sugar levels</p>
+              <p className="text-muted-foreground">
+                Cholesterol and blood sugar levels
+              </p>
             </div>
-            
+
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium mb-2">Cholesterol (chol)</label>
+                <label className="block text-sm font-medium mb-2">
+                  Cholesterol (chol)
+                </label>
                 <input
                   type="number"
                   value={formData.chol}
@@ -238,9 +285,11 @@ const PatientForm = () => {
                   max="400"
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium mb-2">Fasting Blood Sugar {"> 120 mg/dl (fbs)"}</label>
+                <label className="block text-sm font-medium mb-2">
+                  Fasting Blood Sugar {"> 120 mg/dl (fbs)"}
+                </label>
                 <select
                   value={formData.fbs}
                   onChange={(e) => handleInputChange("fbs", e.target.value)}
@@ -251,9 +300,11 @@ const PatientForm = () => {
                   <option value="0">No (≤ 120 mg/dl)</option>
                 </select>
               </div>
-              
+
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium mb-2">Oldpeak (ST depression)</label>
+                <label className="block text-sm font-medium mb-2">
+                  Oldpeak (ST depression)
+                </label>
                 <input
                   type="number"
                   step="0.1"
@@ -277,10 +328,12 @@ const PatientForm = () => {
               <h3 className="text-2xl font-bold">Advanced Tests</h3>
               <p className="text-muted-foreground">Vessel and thalassemia data</p>
             </div>
-            
+
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium mb-2">Major Vessels (ca)</label>
+                <label className="block text-sm font-medium mb-2">
+                  Major Vessels (ca)
+                </label>
                 <select
                   value={formData.ca}
                   onChange={(e) => handleInputChange("ca", e.target.value)}
@@ -293,9 +346,11 @@ const PatientForm = () => {
                   <option value="3">3</option>
                 </select>
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium mb-2">Thalassemia (thal)</label>
+                <label className="block text-sm font-medium mb-2">
+                  Thalassemia (thal)
+                </label>
                 <select
                   value={formData.thal}
                   onChange={(e) => handleInputChange("thal", e.target.value)}
@@ -311,7 +366,32 @@ const PatientForm = () => {
             </div>
           </div>
         );
-      
+
+      case 6:
+        return (
+          <div className="space-y-6 animate-fade-in">
+            <div className="text-center mb-8">
+              <CheckCircle className="h-16 w-16 mx-auto text-primary mb-4" />
+              <h3 className="text-2xl font-bold">Target (Optional)</h3>
+              <p className="text-muted-foreground">
+                If you’re training/testing, you can select the target value.
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Target</label>
+              <select
+                value={formData.target}
+                onChange={(e) => handleInputChange("target", e.target.value)}
+                className="input-medical"
+              >
+                <option value="">Select target</option>
+                <option value="0">No disease</option>
+                <option value="1">Disease present</option>
+              </select>
+            </div>
+          </div>
+        );
+
       default:
         return null;
     }
@@ -329,24 +409,27 @@ const PatientForm = () => {
               Complete your medical assessment for AI-powered risk analysis
             </p>
           </div>
-          
+
           <Card className="card-medical">
             <CardHeader>
               <div className="flex items-center justify-between mb-4">
-                <CardTitle>Step {currentStep} of {totalSteps}</CardTitle>
+                <CardTitle>
+                  Step {currentStep} of {totalSteps}
+                </CardTitle>
                 <div className="text-sm text-muted-foreground">
                   {Math.round(progress)}% Complete
                 </div>
               </div>
               <Progress value={progress} className="mb-4" />
               <CardDescription>
-                Please provide accurate information for the best assessment results.
+                Please provide accurate information for the best assessment
+                results.
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent>
               {renderStepContent()}
-              
+
               <div className="flex justify-between mt-8 pt-6 border-t border-border">
                 <Button
                   variant="outline"
@@ -357,14 +440,14 @@ const PatientForm = () => {
                   <ArrowLeft className="h-4 w-4" />
                   <span>Previous</span>
                 </Button>
-                
+
                 {currentStep === totalSteps ? (
                   <Button className="btn-primary flex items-center space-x-2">
                     <CheckCircle className="h-4 w-4" />
                     <span>Get Prediction</span>
                   </Button>
                 ) : (
-                  <Button 
+                  <Button
                     onClick={nextStep}
                     className="btn-primary flex items-center space-x-2"
                   >
