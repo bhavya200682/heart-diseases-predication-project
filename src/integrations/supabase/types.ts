@@ -14,7 +14,208 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_predictions: {
+        Row: {
+          created_at: string
+          health_data_id: string
+          id: string
+          recommendations: string[] | null
+          risk_level: string
+          risk_score: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          health_data_id: string
+          id?: string
+          recommendations?: string[] | null
+          risk_level: string
+          risk_score: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          health_data_id?: string
+          id?: string
+          recommendations?: string[] | null
+          risk_level?: string
+          risk_score?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_predictions_health_data_id_fkey"
+            columns: ["health_data_id"]
+            isOneToOne: false
+            referencedRelation: "patient_health_data"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      appointments: {
+        Row: {
+          appointment_date: string
+          created_at: string
+          doctor_id: string
+          id: string
+          notes: string | null
+          patient_id: string
+          reason: string
+          status: Database["public"]["Enums"]["appointment_status"]
+          updated_at: string
+        }
+        Insert: {
+          appointment_date: string
+          created_at?: string
+          doctor_id: string
+          id?: string
+          notes?: string | null
+          patient_id: string
+          reason: string
+          status?: Database["public"]["Enums"]["appointment_status"]
+          updated_at?: string
+        }
+        Update: {
+          appointment_date?: string
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          reason?: string
+          status?: Database["public"]["Enums"]["appointment_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          appointment_id: string | null
+          created_at: string
+          id: string
+          message: string
+          read: boolean
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          read?: boolean
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          appointment_id?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      patient_health_data: {
+        Row: {
+          age: number
+          ca: number
+          chol: number
+          cp: number
+          created_at: string
+          exang: number
+          fbs: number
+          id: string
+          oldpeak: number
+          restecg: number
+          sex: number
+          slope: number
+          thal: number
+          thalach: number
+          trestbps: number
+          user_id: string
+        }
+        Insert: {
+          age: number
+          ca: number
+          chol: number
+          cp: number
+          created_at?: string
+          exang: number
+          fbs: number
+          id?: string
+          oldpeak: number
+          restecg: number
+          sex: number
+          slope: number
+          thal: number
+          thalach: number
+          trestbps: number
+          user_id: string
+        }
+        Update: {
+          age?: number
+          ca?: number
+          chol?: number
+          cp?: number
+          created_at?: string
+          exang?: number
+          fbs?: number
+          id?: string
+          oldpeak?: number
+          restecg?: number
+          sex?: number
+          slope?: number
+          thal?: number
+          thalach?: number
+          trestbps?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          specialization: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          specialization?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          specialization?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +224,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      appointment_status: "pending" | "confirmed" | "completed" | "cancelled"
+      user_role: "doctor" | "patient"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +352,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      appointment_status: ["pending", "confirmed", "completed", "cancelled"],
+      user_role: ["doctor", "patient"],
+    },
   },
 } as const
