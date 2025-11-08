@@ -23,11 +23,18 @@ const Header = () => {
         </nav>
         
         <div className="flex items-center space-x-3">
-          <Button variant="outline" className="hidden sm:flex items-center space-x-2">
+          <Button 
+            variant="outline" 
+            className="hidden sm:flex items-center space-x-2"
+            onClick={() => window.location.href = '/auth'}
+          >
             <Stethoscope className="h-4 w-4" />
             <span>Doctor Login</span>
           </Button>
-          <Button className="btn-primary">
+          <Button 
+            className="btn-primary"
+            onClick={() => window.location.href = '/auth'}
+          >
             <User className="h-4 w-4 mr-2" />
             Patient Portal
           </Button>

@@ -1,1 +1,4 @@
 project_id = "ykktoxigewnjjqkxlbpf"
+
+[functions.predict-heart-risk]
+verify_jwt = true

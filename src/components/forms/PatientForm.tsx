@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,8 +17,10 @@ import {
   BarChart3,
   ArrowRight,
   ArrowLeft,
-  CheckCircle
+  CheckCircle,
+  Loader2
 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 interface FormData {
   age: number | "";
@@ -55,8 +59,11 @@ const initialFormData: FormData = {
 const PatientForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const totalSteps = 6; // added Target field as separate step
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const totalSteps = 5; // Removed target field as it's not needed for patient input
   const progress = (currentStep / totalSteps) * 100;
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     const numericFields: (keyof FormData)[] = [
@@ -89,6 +96,61 @@ const PatientForm = () => {
   const prevStep = () => {
     if (currentStep > 1) {
       setCurrentStep((prev) => prev - 1);
+    }
+  };
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to submit your health assessment.",
+          variant: "destructive",
+        });
+        navigate('/auth');
+        return;
+      }
+
+      // Submit to AI prediction edge function
+      const { data: result, error } = await supabase.functions.invoke('predict-heart-risk', {
+        body: { healthData: {
+          age: Number(formData.age),
+          sex: Number(formData.sex),
+          cp: Number(formData.cp),
+          trestbps: Number(formData.trestbps),
+          chol: Number(formData.chol),
+          fbs: Number(formData.fbs),
+          restecg: Number(formData.restecg),
+          thalach: Number(formData.thalach),
+          exang: Number(formData.exang),
+          oldpeak: Number(formData.oldpeak),
+          slope: Number(formData.slope),
+          ca: Number(formData.ca),
+          thal: Number(formData.thal),
+        }}
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Assessment Complete!",
+        description: "Your heart health risk has been analyzed.",
+      });
+
+      navigate('/patient-dashboard');
+    } catch (error: any) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to process assessment. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -398,7 +460,7 @@ const PatientForm = () => {
   };
 
   return (
-    <section className="py-20 bg-muted/30">
+    <section id="assessment" className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
@@ -442,9 +504,22 @@ const PatientForm = () => {
                 </Button>
 
                 {currentStep === totalSteps ? (
-                  <Button className="btn-primary flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4" />
-                    <span>Get Prediction</span>
+                  <Button 
+                    className="btn-primary flex items-center space-x-2"
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>Analyzing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="h-4 w-4" />
+                        <span>Get AI Prediction</span>
+                      </>
+                    )}
                   </Button>
                 ) : (
                   <Button
