@@ -3,9 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Heart, LogOut, Users, Calendar, MessageSquare, Activity } from "lucide-react";
+import { Heart, LogOut, Users, Calendar, MessageSquare, Activity, BarChart3 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import RiskDistributionChart from "@/components/dashboard/analytics/RiskDistributionChart";
+import AppointmentTrendsChart from "@/components/dashboard/analytics/AppointmentTrendsChart";
+import HealthMetricsChart from "@/components/dashboard/analytics/HealthMetricsChart";
+import PatientStatisticsCard from "@/components/dashboard/analytics/PatientStatisticsCard";
 
 const DoctorPortal = () => {
   const [user, setUser] = useState<any>(null);
@@ -124,120 +129,140 @@ const DoctorPortal = () => {
           <p className="text-muted-foreground">{user?.specialization}</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-primary" />
-                Total Patients
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-4xl font-bold">{patients.length}</p>
-            </CardContent>
-          </Card>
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          </TabsList>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-primary" />
-                Appointments
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-4xl font-bold">{appointments.length}</p>
-            </CardContent>
-          </Card>
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5 text-primary" />
+                    Total Patients
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-4xl font-bold">{patients.length}</p>
+                </CardContent>
+              </Card>
 
-          <Card className="hover-scale cursor-pointer" onClick={() => navigate('/messages')}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MessageSquare className="h-5 w-5 text-primary" />
-                Messages
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">View patient messages</p>
-            </CardContent>
-          </Card>
-        </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5 text-primary" />
+                    Appointments
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-4xl font-bold">{appointments.length}</p>
+                </CardContent>
+              </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Upcoming Appointments</CardTitle>
-              <CardDescription>Your scheduled patient consultations</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {appointments.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Patient</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {appointments.slice(0, 5).map((apt) => (
-                      <TableRow key={apt.id}>
-                        <TableCell>{apt.patient?.full_name}</TableCell>
-                        <TableCell>{new Date(apt.appointment_date).toLocaleDateString()}</TableCell>
-                        <TableCell>
-                          <Badge variant={apt.status === 'pending' ? 'secondary' : 'default'}>
-                            {apt.status}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <p className="text-muted-foreground">No upcoming appointments</p>
-              )}
-            </CardContent>
-          </Card>
+              <Card className="hover-scale cursor-pointer" onClick={() => navigate('/messages')}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MessageSquare className="h-5 w-5 text-primary" />
+                    Messages
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">View patient messages</p>
+                </CardContent>
+              </Card>
+            </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Patient Risk Overview</CardTitle>
-              <CardDescription>Recent cardiovascular assessments</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {patients.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Patient</TableHead>
-                      <TableHead>Risk Score</TableHead>
-                      <TableHead>Level</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {patients.slice(0, 5).map((patient: any) => (
-                      <TableRow key={patient.id}>
-                        <TableCell>{patient.full_name}</TableCell>
-                        <TableCell>{patient.latestRisk}</TableCell>
-                        <TableCell>
-                          <Badge 
-                            variant={
-                              patient.riskLevel === 'Low' ? 'default' :
-                              patient.riskLevel === 'Moderate' ? 'secondary' : 'destructive'
-                            }
-                          >
-                            {patient.riskLevel}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <p className="text-muted-foreground">No patient data available</p>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Upcoming Appointments</CardTitle>
+                  <CardDescription>Your scheduled patient consultations</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {appointments.length > 0 ? (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Patient</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Status</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {appointments.slice(0, 5).map((apt) => (
+                          <TableRow key={apt.id}>
+                            <TableCell>{apt.patient?.full_name}</TableCell>
+                            <TableCell>{new Date(apt.appointment_date).toLocaleDateString()}</TableCell>
+                            <TableCell>
+                              <Badge variant={apt.status === 'pending' ? 'secondary' : 'default'}>
+                                {apt.status}
+                              </Badge>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  ) : (
+                    <p className="text-muted-foreground">No upcoming appointments</p>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Patient Risk Overview</CardTitle>
+                  <CardDescription>Recent cardiovascular assessments</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {patients.length > 0 ? (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Patient</TableHead>
+                          <TableHead>Risk Score</TableHead>
+                          <TableHead>Level</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {patients.slice(0, 5).map((patient: any) => (
+                          <TableRow key={patient.id}>
+                            <TableCell>{patient.full_name}</TableCell>
+                            <TableCell>{patient.latestRisk}</TableCell>
+                            <TableCell>
+                              <Badge 
+                                variant={
+                                  patient.riskLevel === 'Low' ? 'default' :
+                                  patient.riskLevel === 'Moderate' ? 'secondary' : 'destructive'
+                                }
+                              >
+                                {patient.riskLevel}
+                              </Badge>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  ) : (
+                    <p className="text-muted-foreground">No patient data available</p>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="analytics" className="space-y-6">
+            <PatientStatisticsCard patients={patients} appointments={appointments} />
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <RiskDistributionChart patients={patients} />
+              <HealthMetricsChart patients={patients} />
+            </div>
+
+            <AppointmentTrendsChart appointments={appointments} />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
