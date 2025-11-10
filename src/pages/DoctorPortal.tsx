@@ -225,24 +225,28 @@ const DoctorPortal = () => {
                           <TableHead>Level</TableHead>
                         </TableRow>
                       </TableHeader>
-                      <TableBody>
-                        {patients.slice(0, 5).map((patient: any) => (
-                          <TableRow key={patient.id}>
-                            <TableCell>{patient.full_name}</TableCell>
-                            <TableCell>{patient.latestRisk}</TableCell>
-                            <TableCell>
-                              <Badge 
-                                variant={
-                                  patient.riskLevel === 'Low' ? 'default' :
-                                  patient.riskLevel === 'Moderate' ? 'secondary' : 'destructive'
-                                }
-                              >
-                                {patient.riskLevel}
-                              </Badge>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
+                  <TableBody>
+                    {patients.slice(0, 5).map((patient: any) => (
+                      <TableRow 
+                        key={patient.id}
+                        className="cursor-pointer hover:bg-muted/50 transition-colors"
+                        onClick={() => navigate(`/patient/${patient.id}`)}
+                      >
+                        <TableCell className="font-medium">{patient.full_name}</TableCell>
+                        <TableCell>{patient.latestRisk}</TableCell>
+                        <TableCell>
+                          <Badge 
+                            variant={
+                              patient.riskLevel === 'Low' ? 'default' :
+                              patient.riskLevel === 'Moderate' ? 'secondary' : 'destructive'
+                            }
+                          >
+                            {patient.riskLevel}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
                     </Table>
                   ) : (
                     <p className="text-muted-foreground">No patient data available</p>
